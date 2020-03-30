@@ -1,5 +1,6 @@
 package com.github.rafaeldcfarias.config;
 
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -23,8 +24,10 @@ public class HelloWorldBatchConfig {
 	@Bean
 	public Job job1() {
 		// @formatter:off
-		return jobBFactory.get("job1").start(step1())
-				.next(step2()).next(step2()).next(step3()).build();
+		return jobBFactory.get("job1").start(step1()).on("COMPLETED").to(step2())
+				.from(step2()).on("COMPLETED").to(step3())
+				.from(step3()).end()
+				.build();
 		// @formatter:on
 	}
 
